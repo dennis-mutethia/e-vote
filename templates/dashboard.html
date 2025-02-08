@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-inner">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header text-center">
+                <h4 class="card-title text-center text-bold">
+                    <u>PRESIDENTIAL ELECTIONS (10 Candidates)</u><br />
+                </h4>
+
+                <div class="row">
+                    {% for i in range(10) %}
+                    <div class="col-md-4">
+                        <div class="card card-post card-round">
+                            <div class="card-body" style="background-color:wheat">
+                                <p class="demo">
+                                    <div class="avatar avatar-xxl">
+                                        <img src="{{ url_for('static', filename='assets/img/candidates/ruto.jpg') }}" alt="..." class="avatar-img rounded-circle">
+                                    </div>
+                                    <div class="avatar avatar-xl">
+                                        <img src="{{ url_for('static', filename='assets/img/candidates/kindiki.jpg') }}" alt="..." class="avatar-img rounded-circle">
+                                    </div>
+                                </p>
+                                <div class="d-flex">
+                                    <div class="avatar">
+                                        <img src="{{ url_for('static', filename='assets/img/candidates/uda.png') }}"
+                                            alt="..." class="avatar-img rounded-circle">
+                                    </div>
+                                    <div class="info-post ml-2">
+                                        <p class="username">WILLIAM RUTO</p>
+                                        <p class="username text-small">KITHURE KINDIKI</p>
+                                        <p class="text-muted text-small">UNITED DEMOCRATIC PARTY</p>
+                                    </div>
+                                </div>
+                                <a href="#" class="btn btn-success btn-rounded" data-toggle="modal"
+                                    data-target="#confirmModal" onclick="confirmVote(1, 'WILLIAM RUTO')">
+                                    <i class="fas fa-check-circle"></i> VOTE</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="POST">
+                <input type="hidden" id="election_id" name="election_id" value="{{ election_id }}" />
+                <input type="hidden" id="candidate_id" name="candidate_id" />
+                <div class="modal-header">
+                    <h5 class="text-center">Are you Sure You want to Vote for <code class="text-xs"
+                            style="color: black;" id="candidate_name"></code>?</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="color: black" class="modal-body text-center">"Confirm Vote" below if you want to vote
+                        for <code class="text-xs" style="color: black;" id="candidate_name_name_2"></code>.
+                        <p class="text-small" style="color: red">Once voted, you cannot change!!!</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger pull-left" type="button" data-dismiss="modal">Cancel</button>
+                        <button type="submit" id="action" name="action" value="vote"
+                            class="btn btn-success float-end">Confirm Vote</button>
+                    </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        {% if success %}
+        $.notify({
+            icon: 'fa fa-bell',
+            message: '{{ success }}'
+
+        },{
+            type: 'success',
+            timer: 1000,
+            placement: {
+                from: 'top',
+                align: 'right'
+            }
+        });
+        {% endif %}
+    });
+
+    function confirmVote(id, name) {
+        $("#candidate_id").val(id);
+        $("#candidate_name").html(name);
+        $("#candidate_name_name_2").html(name);
+    }
+
+</script>
+{% endblock %}

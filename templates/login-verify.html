@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-inner">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header text-center">
+                <form method="POST" >
+                    <h4 class="card-title text-center">
+                        WELCOME TO eVOTE <br />
+                        JOHN DOE
+                    </h4>
+                    <h6 class="card-category text-center">PLEASE ENTER THE SMS CODE SENT TO YOUR PHONE TO LOGIN</h6>
+                    
+                    <div class="row">
+                        <div class="col-md-4"></div>                    
+                        <div class="form-group form-inline col-md-4">
+                            <label for="code" class="col-md-3 col-form-label">CODE:</label>
+                            <div class="col-md-6 p-0">
+                                <input type="number" min="999" max="9999" class="form-control input-full" id="code" name="code" placeholder="E.g. 1234" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <a class="btn btn-danger btn-round pull-left" href="{{ url_for('login') }}"><< BACK</a>
+                        <button class="btn btn-success btn-round pull-right" type="submit" name="action" value="verify">LOGIN >></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('#code').focus();
+
+        {% if error %}        
+        $.notify({
+            icon: 'fa fa-bell',
+            message: '{{ error }}'
+
+        },{
+            type: 'danger',
+            timer: 1000,
+            placement: {
+                from: 'top',
+                align: 'right'
+            }
+        });
+        {% endif %}
+
+    });   
+
+</script>
+
+{% endblock %}

@@ -8,6 +8,7 @@ from redis import Redis
 from utils.dashboard import Dashboard
 from utils.db import Db
 from utils.login import Login
+from utils.login_verify import LoginVerify
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
@@ -35,9 +36,9 @@ login_manager.login_view = 'login'
 db = Db()
      
 # # Callback to reload the user object
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return SystemUsers(db).get_by_id(user_id)
+@login_manager.user_loader
+def load_user(id):
+    return db.get_voter(id)
 
 # Routes
 @app.route('/')
@@ -48,8 +49,11 @@ def index():
 def login():
     return Login(db)()
 
+@app.route('/login-verify', methods=['GET', 'POST'])
+def login_verify():
+    return LoginVerify(db)()
+
 @app.route('/logout')
-@login_required
 def logout():
     logout_user()
     return redirect(url_for('login'))

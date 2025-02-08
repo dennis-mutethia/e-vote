@@ -14,13 +14,7 @@ class Login():
         try:
             pass
         except Exception as e:
-            return render_template('login.html', error=e)
-    
-    def change_phone(self):      
-        try:
-            pass
-        except Exception as e:
-            return render_template('login.html', error=e)        
+            return render_template('login.html', error=e) 
                
     def __call__(self):
         if request.method == 'POST':
@@ -28,7 +22,9 @@ class Login():
                 return self.register()
             elif request.form['action'] == 'login':
                 return self.login()
-            elif request.form['action'] == 'change_phone':
-                return self.change_phone()
 
+        # counties = self.db.get_counties()
+        # constituencies = self.db.get_constituencies()
+        # print(counties)
+        # print(constituencies)
         return render_template('login.html', error=None)

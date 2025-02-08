@@ -1,9 +1,13 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, redirect, render_template, url_for, send_from_directory
+from flask import Flask, redirect, url_for
 from flask_login import LoginManager, logout_user, login_required
 from flask_session import Session
 from redis import Redis
+
+from utils.dashboard import Dashboard
+from utils.db import Db
+from utils.login import Login
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # One year in seconds
@@ -27,7 +31,9 @@ Session(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-         
+
+db = Db()
+     
 # # Callback to reload the user object
 # @login_manager.user_loader
 # def load_user(user_id):

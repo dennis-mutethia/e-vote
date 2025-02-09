@@ -89,3 +89,33 @@ CREATE TABLE e_vote.elections (
   updated_by TEXT,
   UNIQUE (name)
 );
+
+DROP TABLE IF EXISTS e_vote.parties; 
+CREATE TABLE e_vote.parties (
+  id TEXT PRIMARY KEY,
+  name TEXT,
+  icon TEXT,
+  created_at TIMESTAMP,
+  created_by TEXT,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by TEXT,
+  UNIQUE (name)
+);
+
+DROP TABLE IF EXISTS e_vote.candidates; 
+CREATE TABLE e_vote.candidates (
+  id TEXT PRIMARY KEY,
+  voter_id TEXT,
+  party_id TEXT,
+  icon TEXT,
+  running_mate_voter_id TEXT,
+  running_mate_icon TEXT,
+  election_id TEXT,
+  unit TEXT,
+  unit_id TEXT,
+  created_at TIMESTAMP,
+  created_by TEXT,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_by TEXT,
+  UNIQUE (voter_id)
+);

@@ -39,3 +39,15 @@ class Election():
     def __init__(self, id, name):
         self.id = id
         self.name = name
+
+class Candidate():
+    def __init__(self, id, icon, running_mate_icon, unit, unit_id, name, running_mate_name, party_name, party_icon):
+        self.id = id
+        self.icon = icon
+        self.running_mate_icon = running_mate_icon
+        self.unit = unit
+        self.unit_id = unit_id
+        self.name = name
+        self.running_mate_name = running_mate_name
+        self.party_name = party_name
+        self.party_icon = party_icon

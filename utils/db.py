@@ -2,7 +2,7 @@ from flask_login import current_user
 import os, psycopg2
 import uuid
 
-from utils.entities import Constituency, County, Election, Voter
+from utils.entities import Candidate, Constituency, County, Election, Voter
 
 class Db():
     def __init__(self):
@@ -153,6 +153,32 @@ class Db():
                     return Election(data[0], data[1])
                 else:
                     return None
+        except Exception as e:
+            print(e)
+            return None   
+      
+    def get_candidates(self, election_id):
+        self.ensure_connection()
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"""
+                SELECT c.id, c.icon, running_mate_icon, unit, unit_id,
+                CONCAT(v.first_name, ' ', v.last_name, ' ', v.other_name) AS name, 
+                CONCAT(v2.first_name, ' ', v2.last_name, ' ', v2.other_name) AS running_mate_name,
+                p.name AS party_name, p.icon AS party_icon
+                FROM {self.schema}.candidates c
+                JOIN {self.schema}.voters v ON v.id = c.voter_id
+                JOIN {self.schema}.voters v2 ON v2.id = c.running_mate_voter_id
+                JOIN {self.schema}.parties p ON p.id = c.party_id
+                WHERE c.election_id = %s
+                """
+                cursor.execute(query, (election_id,))
+                data = cursor.fetchall()
+                candidates = []
+                for datum in data:
+                    candidates.append(Candidate(datum[0], datum[1], datum[2], datum[3], datum[4], datum[5], datum[6], datum[7], datum[8]))
+                
+                return candidates
         except Exception as e:
             print(e)
             return None

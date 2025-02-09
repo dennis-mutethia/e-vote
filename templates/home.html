@@ -6,35 +6,35 @@
         <div class="card">
             <div class="card-header text-center">
                 <h4 class="card-title text-center text-bold">
-                    <u>{{ election.name }} ELECTIONS (10 Candidates)</u><br />
+                    <u>{{ election.name }} ELECTIONS ({{ candidates|length }} Candidates)</u><br />
                 </h4>
 
                 <div class="row">
-                    {% for i in range(10) %}
+                    {% for candidate in candidates %}
                     <div class="col-md-4">
                         <div class="card card-post card-round">
                             <div class="card-body" style="background-color:wheat">
                                 <p class="demo">
                                     <div class="avatar avatar-xxl">
-                                        <img src="{{ url_for('static', filename='assets/img/candidates/ruto.jpg') }}" alt="..." class="avatar-img rounded-circle">
+                                        <img src="{{ url_for('static', filename='assets/img/candidates/' + candidate.icon) }}" alt="{{ candidate.icon }}" class="avatar-img rounded-circle">
                                     </div>
                                     <div class="avatar avatar-xl">
-                                        <img src="{{ url_for('static', filename='assets/img/candidates/kindiki.jpg') }}" alt="..." class="avatar-img rounded-circle">
+                                        <img src="{{ url_for('static', filename='assets/img/candidates/' + candidate.running_mate_icon) }}" alt="candidate.running_mate_icon" class="avatar-img rounded-circle">
                                     </div>
                                 </p>
                                 <div class="d-flex">
                                     <div class="avatar">
-                                        <img src="{{ url_for('static', filename='assets/img/candidates/uda.png') }}"
+                                        <img src="{{ url_for('static', filename='assets/img/parties/' + candidate.party_icon) }}"
                                             alt="..." class="avatar-img rounded-circle">
                                     </div>
                                     <div class="info-post ml-2">
-                                        <p class="username">WILLIAM RUTO</p>
-                                        <p class="username text-small">KITHURE KINDIKI</p>
-                                        <p class="text-muted text-small">UNITED DEMOCRATIC PARTY</p>
+                                        <p class="username">{{ candidate.name }}</p>
+                                        <p class="username text-small">{{ candidate.running_mate_name }}</p>
+                                        <p class="text-muted text-small">{{ candidate.party_name }}</p>
                                     </div>
                                 </div>
                                 <a href="#" class="btn btn-success btn-rounded" data-toggle="modal"
-                                    data-target="#confirmModal" onclick="confirmVote(1, 'WILLIAM RUTO')">
+                                    data-target="#confirmModal" onclick="confirmVote('{{ candidate.id }}', '{{ candidate.name }}')">
                                     <i class="fas fa-check-circle"></i> VOTE</a>
                             </div>
                         </div>

@@ -10,7 +10,7 @@ class Home():
             election_id = request.form['election_id']
             candidate_id = request.form['candidate_id']
             if self.db.cast_vote(election_id, candidate_id):
-                success='Presidential Vote Casted Successful.'
+                success='Presidential Vote Saved Successful.'
                 error=None
             else:
                 success=None

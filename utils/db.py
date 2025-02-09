@@ -31,7 +31,7 @@ class Db():
         except Exception as e:
             # Reconnect if the connection is invalid
             self.conn = psycopg2.connect(**self.conn_params)        
-      
+     
     def get_counties(self):
         self.ensure_connection()
         try:
@@ -71,37 +71,27 @@ class Db():
         self.ensure_connection()
         try:
             with self.conn.cursor() as cursor:
-                query = f"SELECT id, id_number, first_name, last_name, other_name, phone, polling_station_id FROM {self.schema}.voters"
+                query = f"""SELECT voters.id, id_number, first_name, last_name, other_name, phone, polling_station_id, ward_id, constituency_id, county_id 
+                FROM {self.schema}.voters
+                JOIN {self.schema}.polling_stations ON polling_station_id = polling_stations.id
+                JOIN {self.schema}.wards ON polling_stations.ward_id = wards.id
+                JOIN {self.schema}.constituencies ON wards.constituency_id = constituencies.id
+                """
                 if id is not None:
-                    query = f"{query} WHERE id = %s"
+                    query = f"{query} WHERE voters.id = %s"
                     cursor.execute(query, (id,))
                 else:
                     query = f"{query} WHERE fingerprint_hash = %s"
                     cursor.execute(query, (fingerprint_hash,))
                 data = cursor.fetchone()
                 if data:
-                    return Voter(data[0], data[1], data[2], data[3], data[4], data[5], data[6])
+                    return Voter(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9])
                 else:
                     return None
         except Exception as e:
             print(e)
             return None
-    
-    def get_voter_by_fingerprint_hash(self, fingerprint_hash):
-        self.ensure_connection()
-        try:
-            with self.conn.cursor() as cursor:
-                query = f"SELECT id, id_number, first_name, last_name, other_name, phone, polling_station_id FROM {self.schema}.voters WHERE fingerprint_hash = %s"
-                cursor.execute(query, (fingerprint_hash,))
-                data = cursor.fetchone()
-                if data:
-                    return Voter(data[0], data[1], data[2], data[3], data[4], data[5], data[6])
-                else:
-                    return None
-        except Exception as e:
-            print(e)
-            return None  
-    
+
     def insert_sms_code(self, voter_id, code):
         id = str(uuid.uuid4())
         self.ensure_connection()
@@ -190,12 +180,26 @@ class Db():
             return None
     
     def cast_vote(self, election_id, candidate_id):
-        id = str(uuid.uuid5(uuid.NAMESPACE_DNS, (f'{election_id}-{candidate_id}-{current_user.id}')))
         self.ensure_connection()
         try:
             with self.conn.cursor() as cursor:
-                query = f"INSERT INTO {self.schema}.votes (id, election_id, candidate_id, voter_id, created_at) VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP)"
-                cursor.execute(query, (id, election_id, candidate_id, current_user.id))
+                query = f"""INSERT INTO {self.schema}.votes 
+                (election_id, candidate_id, voter_id, polling_station_id, ward_id, constituency_id, county_id, created_at) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                """
+                cursor.execute(query, (election_id, candidate_id, current_user.id, current_user.polling_station_id, current_user.ward_id, current_user.constituency_id, current_user.county_id))
+                self.conn.commit()
+                return True
+        except Exception as e:
+            print(e)
+            return False
+    
+    def create_votes_partition(self, polling_station_id):
+        self.ensure_connection()
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"CREATE TABLE IF NOT EXISTS {self.schema}.votes_{polling_station_id.replace('-', '_')} PARTITION OF {self.schema}.votes FOR VALUES IN ('{polling_station_id}')"
+                cursor.execute(query)
                 self.conn.commit()
                 return True
         except Exception as e:

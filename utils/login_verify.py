@@ -7,7 +7,6 @@ class LoginVerify():
     def __init__(self, db, uid): 
         self.db = db   
         self.voter_id = uid
-        self.send_sms_code()
     
     def send_sms_code(self):
         code = self.db.get_sms_code(self.voter_id)
@@ -25,6 +24,7 @@ class LoginVerify():
             if code == expected_code:
                 voter = self.db.get_voter(self.voter_id)
                 login_user(voter)
+                self.db.create_votes_partition(voter.polling_station_id)
                 self.db.update_sms_code_status(self.voter_id)
                 return redirect(url_for('home', uid=self.voter_id)) 
             else:
@@ -47,8 +47,8 @@ class LoginVerify():
             elif request.form['action'] == 'change_phone':
                 return self.change_phone()
 
-        # counties = self.db.get_counties()
-        # constituencies = self.db.get_constituencies()
-        # print(counties)
-        # print(constituencies)
-        return render_template('login-verify.html', error=None)
+        if self.db.get_voter(self.voter_id):
+            self.send_sms_code()
+            return render_template('login-verify.html', error=None)
+        else:
+            return redirect(url_for('login'))

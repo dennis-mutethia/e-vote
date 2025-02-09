@@ -120,16 +120,19 @@ CREATE TABLE e_vote.candidates (
   UNIQUE (voter_id)
 );
 
-DROP TABLE IF EXISTS e_vote.votes; 
+DROP TABLE IF EXISTS e_vote.votes;
 CREATE TABLE e_vote.votes (
-  id TEXT PRIMARY KEY,
   election_id TEXT,
   candidate_id TEXT,
   voter_id TEXT,
+  polling_station_id TEXT,
+  ward_id TEXT,
+  constituency_id TEXT,
+  county_id TEXT,
   created_at TIMESTAMP,
   created_by TEXT,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_by TEXT,
-  UNIQUE (election_id, candidate_id, voter_id)
-);
+  PRIMARY KEY (election_id, candidate_id, voter_id, polling_station_id)
+) PARTITION BY LIST (polling_station_id);
 

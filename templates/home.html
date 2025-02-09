@@ -88,6 +88,23 @@
             }
         });
         {% endif %}
+        {% if error %}  
+        $.notify({
+            icon: 'fa fa-bell',
+            message: '{{ error }}'
+
+        },{
+            type: 'danger',
+            timer: 1000,
+            placement: {
+                from: 'top',
+                align: 'right'
+            }
+        });
+        {% endif %}
+
+
+
     });
 
     function confirmVote(id, name) {

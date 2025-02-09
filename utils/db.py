@@ -146,7 +146,13 @@ class Db():
         self.ensure_connection()
         try:
             with self.conn.cursor() as cursor:
-                query = f"SELECT id, name FROM {self.schema}.elections ORDER BY code ASC LIMIT 1"
+                query = f"""SELECT id, name 
+                    FROM {self.schema}.elections 
+                    WHERE id NOT IN(
+                        SELECT election_id FROM {self.schema}.votes WHERE voter_id = %s
+                    )
+                    ORDER BY code ASC LIMIT 1
+                """
                 cursor.execute(query, (current_user.id,))
                 data = cursor.fetchone()
                 if data:
@@ -182,3 +188,16 @@ class Db():
         except Exception as e:
             print(e)
             return None
+    
+    def cast_vote(self, election_id, candidate_id):
+        id = str(uuid.uuid5(uuid.NAMESPACE_DNS, (f'{election_id}-{candidate_id}-{current_user.id}')))
+        self.ensure_connection()
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"INSERT INTO {self.schema}.votes (id, election_id, candidate_id, voter_id, created_at) VALUES (%s, %s, %s, %s, CURRENT_TIMESTAMP)"
+                cursor.execute(query, (id, election_id, candidate_id, current_user.id))
+                self.conn.commit()
+                return True
+        except Exception as e:
+            print(e)
+            return False

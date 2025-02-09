@@ -1,13 +1,10 @@
 {
     "name": "E-VOTE",
-    "runServices": ["app", "db", "redis"],
-    "service": "app",
-    "workspaceFolder": "/workspace",
+    "dockerFile": "../Dockerfile",
     "customizations": {
         "vscode": {
             "extensions": [
                 "ms-azuretools.vscode-docker",
-                "github.vscode-github-actions",
                 "ms-python.pylint",
                 "mechatroner.rainbow-csv"
             ],
@@ -16,6 +13,5 @@
             }
         }
     },
-    "dockerComposeFile": ["../docker-compose.yml"],
-    "forwardPorts": [5000, 5432, 6379]
+    "forwardPorts": [5000]
 }

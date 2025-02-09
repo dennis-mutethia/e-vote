@@ -7,25 +7,8 @@
 
 <body>
 	<div class="wrapper">
-		<div class="main-header">
-			<!-- Logo Header -->
-			<div class="logo-header" data-background-color="blue">
-				{% if current_user.id %}
-				<a class="btn btn-xs btn-danger btn-round pull-left" href="{{ url_for('logout') }}"><< LOGOUT</a>
-				{% endif %}
-				<a href="#" class="logo pull-right" style="color: white;">eVoting System</a>
-			</div>
-			<!-- End Logo Header -->
-
-			<!-- Navbar Header -->
-			<nav class="navbar navbar-header navbar-expand-lg" data-background-color="blue2"></nav>
-			<!-- End Navbar -->
-		</div>
-
-
 
 		<div class="content">
-			<h1><br /></h1>
 			{% block content %}
 			<!-- Default content goes here -->
 			{% endblock %}

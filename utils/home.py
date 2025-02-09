@@ -30,4 +30,5 @@ class Home():
 
         election = self.db.get_active_election()
         candidates = self.db.get_candidates(election.id)
-        return render_template('home.html', election=election, candidates=candidates, success=success, error=error)
+        my_votes = self.db.get_my_votes()
+        return render_template('home.html', election=election, candidates=candidates, my_votes=my_votes, success=success, error=error)

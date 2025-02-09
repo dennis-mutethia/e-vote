@@ -3,13 +3,20 @@
 {% block content %}
 <div class="page-inner">
     <div class="col-md-12">
+        
         <div class="card">
-            <div class="card-header text-center">
-                <h4 class="card-title text-center text-bold">
+            <div class="card-header text-center" style="background-color: whitesmoke;">
+                {% if current_user.id %}
+				<a class="btn btn-danger btn-round pull-left" href="{{ url_for('logout') }}"><< LOGOUT</a>
+				<a class="btn btn-primary btn-round pull-right" href="#" data-toggle="modal" data-target="#viewModal">VIEW MY VOTES</a>
+				{% endif %}
+                <h4 class="card-title text-center text-bold" style="color: black;">
                     <u>{{ election.name }} ELECTIONS ({{ candidates|length }} Candidates)</u><br />
                 </h4>
-
-                <div class="row">
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body row text-center" style="background-color: whitesmoke;">
                     {% for candidate in candidates %}
                     <div class="col-md-4">
                         <div class="card card-post card-round">
@@ -33,8 +40,8 @@
                                         <p class="text-muted text-small">{{ candidate.party_name }}</p>
                                     </div>
                                 </div>
-                                <a href="#" class="btn btn-success btn-rounded" data-toggle="modal"
-                                    data-target="#confirmModal" onclick="confirmVote('{{ candidate.id }}', '{{ candidate.name }}')">
+                                <a href="#" class="btn btn-success btn-rounded" data-toggle="modal" data-target="#confirmModal" 
+                                    onclick="confirmVote('{{ candidate.id }}', '{{ candidate.name }}')">
                                     <i class="fas fa-check-circle"></i> VOTE</a>
                             </div>
                         </div>
@@ -68,10 +75,50 @@
                         <button type="submit" id="action" name="action" value="vote"
                             class="btn btn-success float-end">Confirm Vote</button>
                     </div>
+                </div>
             </form>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="viewModal" tabindex="-1" role="dialog" aria-labelledby="viewModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="text-center">You have voted for the following candidates:</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table-bordered table-striped" style="width: 100%;">
+                        <tbody>
+                            {% for my_vote in my_votes %}
+                            <tr>
+                                <td class="text-right">{{ my_vote.election_code }}.</td>
+                                <td>{{ my_vote.election_name }}</td>
+                                {% if my_vote.candidate_name %}
+                                <td>{{ my_vote.candidate_name }}</td>
+                                <td class="text-center avatar-sm">
+                                    <img src="{{ url_for('static', filename='assets/img/candidates/' + my_vote.icon) }}"
+                                        alt="{{ my_vote.icon }}" class="avatar-img rounded-circle">
+                                </td>
+                                {% else %}
+                                <td colspan="2" class="text-center">---</td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table> 
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function () {
         {% if success %}

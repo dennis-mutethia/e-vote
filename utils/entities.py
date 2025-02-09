@@ -54,3 +54,10 @@ class Candidate():
         self.running_mate_name = running_mate_name
         self.party_name = party_name
         self.party_icon = party_icon
+
+class MyVote():
+    def __init__(self, election_code, election_name, candidate_name, icon):
+        self.election_code = election_code
+        self.election_name = election_name
+        self.candidate_name = candidate_name
+        self.icon = icon

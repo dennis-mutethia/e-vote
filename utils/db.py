@@ -2,7 +2,7 @@ from flask_login import current_user
 import os, psycopg2
 import uuid
 
-from utils.entities import Candidate, Constituency, County, Election, Voter
+from utils.entities import Candidate, Constituency, County, Election, MyVote, Voter
 
 class Db():
     def __init__(self):
@@ -204,4 +204,32 @@ class Db():
                 return True
         except Exception as e:
             print(e)
-            return False
+            return False 
+      
+    def get_my_votes(self):
+        self.ensure_connection()
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"""
+                WITH votes AS(
+                    SELECT votes.election_id, CONCAT(first_name, ' ', last_name, ' ', other_name) AS candidate_name, icon
+                    FROM {self.schema}.votes 
+                    LEFT JOIN {self.schema}.candidates ON candidate_id = candidates.id
+                    LEFT JOIN {self.schema}.voters ON candidates.voter_id = voters.id
+                    WHERE votes.voter_id = %s
+                )
+                SELECT elections.code, elections.name, candidate_name, icon
+                FROM e_vote.elections 
+                LEFT JOIN votes ON election_id = elections.id
+                ORDER BY elections.code
+                """
+                cursor.execute(query, (current_user.id,))
+                data = cursor.fetchall()
+                my_votes = []
+                for datum in data:
+                    my_votes.append(MyVote(datum[0], datum[1], datum[2], datum[3]))
+                
+                return my_votes
+        except Exception as e:
+            print(e)
+            return None

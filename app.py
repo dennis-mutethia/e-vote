@@ -5,7 +5,7 @@ from flask_login import LoginManager, logout_user, login_required
 from flask_session import Session
 from redis import Redis
 
-from utils.dashboard import Dashboard
+from utils.home import Home
 from utils.db import Db
 from utils.login import Login
 from utils.login_verify import LoginVerify
@@ -43,25 +43,25 @@ def load_user(id):
 # Routes
 @app.route('/')
 def index():
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     return Login(db)()
 
-@app.route('/login-verify', methods=['GET', 'POST'])
-def login_verify():
-    return LoginVerify(db)()
+@app.route('/login-verify/<uid>', methods=['GET', 'POST'])
+def login_verify(uid):
+    return LoginVerify(db, uid)()
 
 @app.route('/logout')
 def logout():
     logout_user()
     return redirect(url_for('login'))
 
-@app.route('/dashboard', methods=['GET', 'POST'])
+@app.route('/home/<uid>', methods=['GET', 'POST'])
 @login_required
-def dashboard(): 
-    return Dashboard(db)() 
+def home(uid): 
+    return Home(db)() 
 
 if __name__ == '__main__':
     debug_mode = os.getenv('IS_DEBUG', 'False') in ['True', '1', 't']

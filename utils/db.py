@@ -1,6 +1,8 @@
+from flask_login import current_user
 import os, psycopg2
+import uuid
 
-from utils.entities import Constituency, County, Voter
+from utils.entities import Constituency, County, Election, Voter
 
 class Db():
     def __init__(self):
@@ -94,6 +96,61 @@ class Db():
                 data = cursor.fetchone()
                 if data:
                     return Voter(data[0], data[1], data[2], data[3], data[4], data[5], data[6])
+                else:
+                    return None
+        except Exception as e:
+            print(e)
+            return None  
+    
+    def insert_sms_code(self, voter_id, code):
+        id = str(uuid.uuid4())
+        self.ensure_connection()
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"INSERT INTO {self.schema}.sms_codes (id, voter_id, code) VALUES (%s, %s, %s)"
+                cursor.execute(query, (id, voter_id, code))
+                self.conn.commit()
+                return True
+        except Exception as e:
+            print(e)
+            return False
+    
+    def get_sms_code(self, voter_id):
+        self.ensure_connection()
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"SELECT code FROM {self.schema}.sms_codes WHERE voter_id = %s AND status = 0 ORDER BY created_at DESC LIMIT 1"
+                cursor.execute(query, (voter_id,))
+                data = cursor.fetchone()
+                if data:
+                    return data[0]
+                else:
+                    return None
+        except Exception as e:
+            print(e)
+            return None
+    
+    def update_sms_code_status(self, voter_id):
+        self.ensure_connection()
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"UPDATE {self.schema}.sms_codes SET status = 1 WHERE voter_id = %s"
+                cursor.execute(query, (voter_id,))
+                self.conn.commit()
+                return True
+        except Exception as e:
+            print(e)
+            return False
+    
+    def get_active_election(self):
+        self.ensure_connection()
+        try:
+            with self.conn.cursor() as cursor:
+                query = f"SELECT id, name FROM {self.schema}.elections ORDER BY code ASC LIMIT 1"
+                cursor.execute(query, (current_user.id,))
+                data = cursor.fetchone()
+                if data:
+                    return Election(data[0], data[1])
                 else:
                     return None
         except Exception as e:

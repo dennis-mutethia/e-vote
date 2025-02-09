@@ -34,3 +34,8 @@ class Voter(UserMixin):
         self.other_name = other_name
         self.phone = phone
         self.polling_station_id = polling_station_id
+        
+class Election():
+    def __init__(self, id, name):
+        self.id = id
+        self.name = name

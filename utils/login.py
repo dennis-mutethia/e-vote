@@ -1,4 +1,5 @@
 from flask import render_template, request
+import uuid
 
 class Login():
     def __init__(self, db): 
@@ -17,6 +18,8 @@ class Login():
             return render_template('login.html', error=e) 
                
     def __call__(self):
+        key = uuid.uuid4()
+        #print(key)
         if request.method == 'POST':
             if request.form['action'] == 'register':
                 return self.register()

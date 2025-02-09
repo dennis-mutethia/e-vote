@@ -6,7 +6,7 @@
         <div class="card">
             <div class="card-header text-center">
                 <h4 class="card-title text-center text-bold">
-                    <u>PRESIDENTIAL ELECTIONS (10 Candidates)</u><br />
+                    <u>{{ election.name }} ELECTIONS (10 Candidates)</u><br />
                 </h4>
 
                 <div class="row">
@@ -51,7 +51,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form method="POST">
-                <input type="hidden" id="election_id" name="election_id" value="{{ election_id }}" />
+                <input type="hidden" id="election_id" name="election_id" value="{{ election.id }}" />
                 <input type="hidden" id="candidate_id" name="candidate_id" />
                 <div class="modal-header">
                     <h5 class="text-center">Are you Sure You want to Vote for <code class="text-xs"

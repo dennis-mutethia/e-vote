@@ -1,6 +1,6 @@
 --counties
-INSERT INTO e_vote.counties (name, created_at, created_by, updated_at, updated_by) VALUES 
-('Mombasa', CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
+INSERT INTO e_vote.counties (id, code, name, created_at, created_by, updated_at, updated_by) VALUES 
+('293ed908-0e59-577c-a068-26cd4c6a8442','01','Mombasa', CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
 ('Kwale', CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
 ('Kilifi', CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),
 ('Tana River', CURRENT_TIMESTAMP, NULL, CURRENT_TIMESTAMP, NULL),

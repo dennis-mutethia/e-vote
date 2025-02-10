@@ -5,8 +5,8 @@ from flask_login import LoginManager, logout_user, login_required
 from flask_session import Session
 from redis import Redis
 
-from utils.home import Home
 from utils.db import Db
+from utils.home import Home
 from utils.login import Login
 from utils.login_verify import LoginVerify
 

@@ -92,13 +92,13 @@ class Db():
             print(e)
             return None
 
-    def insert_sms_code(self, voter_id, code):
+    def insert_sms_code(self, voter, code):
         id = str(uuid.uuid4())
         self.ensure_connection()
         try:
             with self.conn.cursor() as cursor:
-                query = f"INSERT INTO {self.schema}.sms_codes (id, voter_id, code) VALUES (%s, %s, %s)"
-                cursor.execute(query, (id, voter_id, code))
+                query = f"INSERT INTO {self.schema}.sms_codes (id, voter_id, polling_station_id, code) VALUES (%s, %s, %s, %s)"
+                cursor.execute(query, (id, voter.id, voter.polling_station_id, code))
                 self.conn.commit()
                 return True
         except Exception as e:
@@ -193,19 +193,7 @@ class Db():
         except Exception as e:
             print(e)
             return False
-    
-    def create_votes_partition(self, polling_station_id):
-        self.ensure_connection()
-        try:
-            with self.conn.cursor() as cursor:
-                query = f"CREATE TABLE IF NOT EXISTS {self.schema}.votes_{polling_station_id.replace('-', '_')} PARTITION OF {self.schema}.votes FOR VALUES IN ('{polling_station_id}')"
-                cursor.execute(query)
-                self.conn.commit()
-                return True
-        except Exception as e:
-            print(e)
-            return False 
-      
+
     def get_my_votes(self):
         self.ensure_connection()
         try:

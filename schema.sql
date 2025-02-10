@@ -51,7 +51,7 @@ CREATE TABLE e_vote.polling_stations (
 
 DROP TABLE IF EXISTS e_vote.voters;
 CREATE TABLE e_vote.voters (
-  id TEXT PRIMARY KEY,
+  id TEXT,
   id_number TEXT,
   fingerprint_hash TEXT,
   first_name TEXT,
@@ -63,20 +63,22 @@ CREATE TABLE e_vote.voters (
   created_by TEXT,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_by TEXT,
-  UNIQUE (id_number)
-);
+  PRIMARY KEY (id_number, polling_station_id)
+) PARTITION BY LIST (polling_station_id);
 
 DROP TABLE IF EXISTS e_vote.sms_codes; 
 CREATE TABLE e_vote.sms_codes (
-  id TEXT PRIMARY KEY,
+  id TEXT,
   voter_id TEXT,
   code TEXT,
+  polling_station_id TEXT,
   status INT DEFAULT 0,
   created_at TIMESTAMP,
   created_by TEXT,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_by TEXT
-);
+  updated_by TEXT,
+  PRIMARY KEY (id, polling_station_id)
+) PARTITION BY LIST (polling_station_id);
 
 DROP TABLE IF EXISTS e_vote.elections; 
 CREATE TABLE e_vote.elections (

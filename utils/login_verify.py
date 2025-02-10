@@ -6,13 +6,13 @@ from flask_login import login_user
 class LoginVerify():
     def __init__(self, db, uid): 
         self.db = db   
-        self.voter_id = uid
+        self.voter = self.db.get_voter(uid)
     
     def send_sms_code(self):
-        code = self.db.get_sms_code(self.voter_id)
+        code = self.db.get_sms_code(self.voter.id)
         if code is None:            
             code = random.randint(1000, 9999)
-            self.db.insert_sms_code(self.voter_id, code)
+            self.db.insert_sms_code(self.voter, code)
             
         #send SMS
         print(f'SMS Code: {code}')
@@ -20,13 +20,12 @@ class LoginVerify():
     def login(self):      
         try:
             code = request.form['code']
-            expected_code = self.db.get_sms_code(self.voter_id)
+            expected_code = self.db.get_sms_code(self.voter.id)
             if code == expected_code:
-                voter = self.db.get_voter(self.voter_id)
+                voter = self.db.get_voter(self.voter.id)
                 login_user(voter)
-                self.db.create_votes_partition(voter.polling_station_id)
-                self.db.update_sms_code_status(self.voter_id)
-                return redirect(url_for('home', uid=self.voter_id)) 
+                self.db.update_sms_code_status(self.voter.id)
+                return redirect(url_for('home', uid=self.voter.id)) 
             else:
                 self.send_sms_code()
                 return render_template('login-verify.html', error='Invalid code. Please try again.')
@@ -47,7 +46,7 @@ class LoginVerify():
             elif request.form['action'] == 'change_phone':
                 return self.change_phone()
 
-        if self.db.get_voter(self.voter_id):
+        if self.voter:
             self.send_sms_code()
             return render_template('login-verify.html', error=None)
         else:

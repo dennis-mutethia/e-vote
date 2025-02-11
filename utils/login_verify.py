@@ -6,7 +6,7 @@ from flask_login import login_user
 class LoginVerify():
     def __init__(self, db, uid): 
         self.db = db   
-        self.voter = self.db.get_voter(uid)
+        self.voter = self.db.get_voter(id=uid)
     
     def send_sms_code(self):
         code = self.db.get_sms_code(self.voter.id)

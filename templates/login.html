@@ -5,13 +5,63 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header text-center" style="background-color: whitesmoke">
-                <h4 class="card-title text-center">WELCOME TO eVOTE</h4>
-                <h6 class="card-category text-center">PLEASE SCAN YOUR FINGERPRINT TO CONTINUE</h6>
-                <br />
-                <a href="{{ url_for('login_verify', uid='f0fe10ca-4354-53df-b570-03980eb10b9e') }}" class="btn btn-primary btn-round"><i class="fas fa-fingerprint"></i></a>
+                <form method="POST">
+                    <h4 class="card-title text-center">WELCOME TO eVOTE</h4>
+                    <h6 class="card-category text-center">PLEASE SCAN YOUR FINGERPRINT TO CONTINUE</h6>
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-sm-4">
+                            <div class="form-group form-group-default">
+                                <label>Voter Id Number</label>
+                                <input id="VoterIdNumber" name="VoterIdNumber" type="text"
+                                    class="form-control" placeholder="Type Voter Id Number Here" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4"></div>   
+                        <div class="col-sm-4">
+                            <button type="submit" id="action" name="action" value="login"class="btn btn-primary btn-round"><i class="fas fa-fingerprint"></i></button>
+                        </div>                    
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+        {% if success %}
+        $.notify({
+            icon: 'fa fa-bell',
+            message: '{{ success }}'
+
+        },{
+            type: 'success',
+            timer: 1000,
+            placement: {
+                from: 'top',
+                align: 'right'
+            }
+        });
+        {% endif %}
+        {% if error %}  
+        $.notify({
+            icon: 'fa fa-bell',
+            message: '{{ error }}'
+
+        },{
+            type: 'danger',
+            timer: 1000,
+            placement: {
+                from: 'top',
+                align: 'right'
+            }
+        });
+        {% endif %}
+    });
+
+</script>
 
 {% endblock %}

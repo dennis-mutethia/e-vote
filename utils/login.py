@@ -1,15 +1,21 @@
-from flask import render_template, request
+from flask import redirect, render_template, request, url_for
 import uuid
 
 class Login():
     def __init__(self, db): 
-        self.db = db        
+        self.db = db   
+        self.error = None     
      
     def login(self):      
         try:
-            pass 
+            id_number = request.form['VoterIdNumber']  
+            voter = self.db.get_voter(id_number=id_number)
+            if voter:
+                return redirect(url_for('login_verify', uid=voter.id))
+            else:
+                self.error = 'Id Number does not Exist'
         except Exception as e:
-            return render_template('login.html', error=e)
+            self.error = e
     
     def register(self):      
         try:
@@ -18,16 +24,10 @@ class Login():
             return render_template('login.html', error=e) 
                
     def __call__(self):
-        key = uuid.uuid4()
-        #print(key)
         if request.method == 'POST':
             if request.form['action'] == 'register':
                 return self.register()
             elif request.form['action'] == 'login':
                 return self.login()
-
-        # counties = self.db.get_counties()
-        # constituencies = self.db.get_constituencies()
-        # print(counties)
-        # print(constituencies)
-        return render_template('login.html', error=None)
+            
+        return render_template('login.html', error=self.error)

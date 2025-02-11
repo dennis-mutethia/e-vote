@@ -39,8 +39,9 @@ class Voter(UserMixin):
         self.county_id = county_id
         
 class Election():
-    def __init__(self, id, name):
+    def __init__(self, id, code, name):
         self.id = id
+        self.code = int(code)
         self.name = name
 
 class Candidate():

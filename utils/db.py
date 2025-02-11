@@ -67,7 +67,7 @@ class Db():
             print(e)
             return None
     
-    def get_voter(self, id=None, fingerprint_hash=None):
+    def get_voter(self, id=None, id_number=None, fingerprint_hash=None):
         self.ensure_connection()
         try:
             with self.conn.cursor() as cursor:
@@ -76,13 +76,19 @@ class Db():
                 JOIN {self.schema}.polling_stations ON polling_station_id = polling_stations.id
                 JOIN {self.schema}.wards ON polling_stations.ward_id = wards.id
                 JOIN {self.schema}.constituencies ON wards.constituency_id = constituencies.id
-                """
+                WHERE 1=1
+                """                
+                params = []
                 if id is not None:
-                    query = f"{query} WHERE voters.id = %s"
-                    cursor.execute(query, (id,))
+                    query = f"{query} AND voters.id = %s"
+                    params.append(id)
+                elif id_number is not None:
+                    query = f"{query} AND id_number = %s"
+                    params.append(id_number)
                 else:
-                    query = f"{query} WHERE fingerprint_hash = %s"
-                    cursor.execute(query, (fingerprint_hash,))
+                    query = f"{query} AND fingerprint_hash = %s"
+                    params.append(fingerprint_hash)
+                cursor.execute(query, tuple(params))
                 data = cursor.fetchone()
                 if data:
                     return Voter(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9])
@@ -136,24 +142,26 @@ class Db():
         self.ensure_connection()
         try:
             with self.conn.cursor() as cursor:
-                query = f"""SELECT id, name 
-                    FROM {self.schema}.elections 
-                    WHERE id NOT IN(
-                        SELECT election_id FROM {self.schema}.votes WHERE voter_id = %s
-                    )
-                    ORDER BY code ASC LIMIT 1
+                query = f"""
+                SELECT id, code, name 
+                FROM {self.schema}.elections 
+                WHERE id NOT IN(
+                    SELECT election_id FROM {self.schema}.votes WHERE voter_id = %s
+                )
+                ORDER BY code ASC 
+                LIMIT 1
                 """
                 cursor.execute(query, (current_user.id,))
                 data = cursor.fetchone()
                 if data:
-                    return Election(data[0], data[1])
+                    return Election(data[0], data[1], data[2])
                 else:
                     return None
         except Exception as e:
             print(e)
             return None   
       
-    def get_candidates(self, election_id):
+    def get_candidates(self, election):
         self.ensure_connection()
         try:
             with self.conn.cursor() as cursor:
@@ -164,11 +172,29 @@ class Db():
                 p.name AS party_name, p.icon AS party_icon
                 FROM {self.schema}.candidates c
                 JOIN {self.schema}.voters v ON v.id = c.voter_id
-                JOIN {self.schema}.voters v2 ON v2.id = c.running_mate_voter_id
+                LEFT JOIN {self.schema}.voters v2 ON v2.id = c.running_mate_voter_id
                 JOIN {self.schema}.parties p ON p.id = c.party_id
+                JOIN {self.schema}.polling_stations ON v.polling_station_id = polling_stations.id 
+                JOIN {self.schema}.wards ON ward_id = wards.id   
+                JOIN {self.schema}.constituencies ON constituency_id = constituencies.id
+                JOIN {self.schema}.counties ON county_id = counties.id
                 WHERE c.election_id = %s
-                """
-                cursor.execute(query, (election_id,))
+                """                             
+                params = [election.id]
+                if election.code == '1': #president
+                    pass                  
+                elif election.code == 2: #mp
+                    query = f"{query} AND constituency_id = %s"
+                    params.append(current_user.constituency_id)     
+                elif election.code in [3, 4, 5]: #woman rep, senator, governor
+                    query = f"{query} AND county_id = %s"
+                    params.append(current_user.county_id)     
+                elif election.code == 6: #mca
+                    query = f"{query} AND ward_id = %s"
+                    params.append(current_user.ward_id)
+                    
+                cursor.execute(query, tuple(params))
+                
                 data = cursor.fetchall()
                 candidates = []
                 for datum in data:

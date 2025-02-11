@@ -23,16 +23,17 @@
                             <div class="card-body" style="background-color:wheat">
                                 <p class="demo">
                                     <div class="avatar avatar-xxl">
-                                        <img src="{{ url_for('static', filename='assets/img/candidates/' + candidate.icon) }}" alt="{{ candidate.icon }}" class="avatar-img rounded-circle">
+                                        <img src="{{ candidate.icon }}" alt="candidate.icon" class="avatar-img rounded-circle">
                                     </div>
+                                    {% if candidate.running_mate_icon %}
                                     <div class="avatar avatar-xl">
-                                        <img src="{{ url_for('static', filename='assets/img/candidates/' + candidate.running_mate_icon) }}" alt="candidate.running_mate_icon" class="avatar-img rounded-circle">
+                                        <img src="{{ candidate.running_mate_icon }}" alt="candidate.running_mate_icon" class="avatar-img rounded-circle">
                                     </div>
+                                    {% endif %}
                                 </p>
                                 <div class="d-flex">
                                     <div class="avatar">
-                                        <img src="{{ url_for('static', filename='assets/img/parties/' + candidate.party_icon) }}"
-                                            alt="..." class="avatar-img rounded-circle">
+                                        <img src="{{ candidate.party_icon }}" alt="candidate.party_icon" class="avatar-img rounded-circle">
                                     </div>
                                     <div class="info-post ml-2">
                                         <p class="username">{{ candidate.name }}</p>
@@ -100,8 +101,7 @@
                                 {% if my_vote.candidate_name %}
                                 <td>{{ my_vote.candidate_name }}</td>
                                 <td class="text-center avatar-sm">
-                                    <img src="{{ url_for('static', filename='assets/img/candidates/' + my_vote.icon) }}"
-                                        alt="{{ my_vote.icon }}" class="avatar-img rounded-circle">
+                                    <img src="{{ my_vote.icon }}" alt="my_vote.icon" class="avatar-img rounded-circle">
                                 </td>
                                 {% else %}
                                 <td colspan="2" class="text-center">Not Voted</td>
@@ -149,9 +149,6 @@
             }
         });
         {% endif %}
-
-
-
     });
 
     function confirmVote(id, name) {
